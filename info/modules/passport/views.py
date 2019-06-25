@@ -12,6 +12,15 @@ from info.utils.captcha.captcha import captcha
 from info.utils.response_code import RET
 
 
+@passport_blue.route('/logout')
+def logout():
+    # 业务逻辑
+    session.pop('user_id')
+    session.pop('mobile')
+    session.pop('nick_name')
+    return jsonify(errno=RET.OK, errmsg='退出成功')
+
+
 @passport_blue.route('/login', methods=['POST'])
 def login():
     # 获取参数
