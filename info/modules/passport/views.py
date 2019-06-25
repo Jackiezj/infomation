@@ -88,7 +88,7 @@ def send_sms_codes():
         current_app.logger.error(e)
         return jsonify(errno=RET.DBERR, errmsg='数据库查询失败')
 
-    result = CCP().send_template_sms(mobile, [sms_code, constants.SMS_CODE_REDIS_EXPIRES], "1")
+    # result = CCP().send_template_sms(mobile, [sms_code, constants.SMS_CODE_REDIS_EXPIRES], "1")
 
     return jsonify(errno=RET.OK, errmsg='发送成功')
 
