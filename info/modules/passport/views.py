@@ -12,6 +12,34 @@ from info.utils.captcha.captcha import captcha
 from info.utils.response_code import RET
 
 
+@passport_blue.route('/login', methods=['POST'])
+def login():
+    # 获取参数
+    params_dict = request.json
+    mobile = params_dict.get('mobile')
+    password = params_dict.get('password')
+
+    # 校验参数
+    if not all([mobile, password]):
+        return jsonify(errno=RET.PARAMERR, errmsg='参数不完整')
+    if not re.match(r'1[3-9]\d{9}', mobile):
+        return jsonify(errno=RET.PARAMERR, errmsg='手机号格式不正确')
+
+    # 业务处理
+    user = User.query.filter(User.mobile == mobile).first()
+    if not user:
+        return jsonify(errno=RET.PARAMERR, errmsg='用户没有注册,请注册')
+    if not user.check_password(password):
+        return jsonify(errno=RET.PARAMERR, errmsg='用户名或密码错误')
+
+    # 记录登录状态
+    session['user_id'] = user.id
+    session['mobile'] = user.mobile
+    session['nick_name'] = user.nick_name
+
+    return jsonify(errno=RET.OK, errmsg='登录成功')
+
+
 @passport_blue.route('/register', methods=['POST'])
 def register():
     # 获取参数
