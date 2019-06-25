@@ -1,6 +1,7 @@
-from flask import render_template, current_app, make_response
+from flask import render_template, current_app, make_response, g
 
 from info.modules.index import index_blu
+from info.utils.common import user_login_data
 
 
 @index_blu.route('/favicon.ico')
@@ -9,6 +10,7 @@ def favicon():
 
 
 @index_blu.route('/')
+@user_login_data
 def index():
     """
     显示首页
@@ -26,7 +28,7 @@ def index():
     #     except Exception as e:
     #         current_app.logger.error(e)
 
-    # user = g.user
+    user = g.user
 
     # 右侧的新闻排行的逻辑
     # news_list = []
@@ -49,7 +51,7 @@ def index():
     #     category_li.append(category.to_dict())
     #
     data = {
-        # "user": user.to_dict() if user else None,
+        "user": user.to_dict() if user else None,
         # "news_dict_li": news_dict_li,
         # "category_li": category_li
     }
