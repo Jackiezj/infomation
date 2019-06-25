@@ -4,7 +4,7 @@ $(function(){
 	$('.login_btn').click(function(){
         $('.login_form_con').show();
 	})
-	
+
 	// 点击关闭按钮关闭登录框或者注册框
 	$('.shutoff').click(function(){
 		$(this).closest('form').hide();
@@ -72,7 +72,7 @@ $(function(){
 	var sHash = window.location.hash;
 	if(sHash!=''){
 		var sId = sHash.substring(1);
-		var oNow = $('.'+sId);		
+		var oNow = $('.'+sId);
 		var iNowIndex = oNow.index();
 		$('.option_list li').eq(iNowIndex).addClass('active').siblings().removeClass('active');
 		oNow.show().siblings().hide();
@@ -150,7 +150,7 @@ $(function(){
 
 var imageCodeId = ""
 
-// TODO 生成一个图片验证码的编号，并设置页面中图片验证码img标签的src属性
+//  生成一个图片验证码的编号，并设置页面中图片验证码img标签的src属性
 function generateImageCode() {
     imageCodeId = generateUUID()
     var url = '/passport/image_codes?image_code_id=' + imageCodeId
@@ -176,7 +176,50 @@ function sendSMSCode() {
         return;
     }
 
-    // TODO 发送短信验证码
+    // 发送短信验证码
+    var params = {
+        "mobile": mobile,
+        "image_code":imageCode,
+        "image_code_id": imageCodeId
+    }
+
+    $.ajax({
+    // 请求地址
+    url: "/passport/send_sms_codes",
+    // 请求方式
+    type: "post",
+    // 请求参数
+    data: JSON.stringify(params),
+    // 请求参数的数据类型
+    contentType: "application/json",
+    success: function (response) {
+        if (response.errno == "0") {
+            // 代表发送成功
+            var num = 60
+            var t = setInterval(function () {
+
+                if (num == 1) {
+                    // 代表倒计时结束
+                    // 清除倒计时
+                    clearInterval(t)
+
+                    // 设置显示内容
+                    $(".get_code").html("点击获取验证码")
+                    // 添加点击事件
+                    $(".get_code").attr("onclick", "sendSMSCode();");
+                }else {
+                    num -= 1
+                    // 设置 a 标签显示的内容
+                    $(".get_code").html(num + "秒")
+                }
+            }, 1000)
+        }else {
+            // 代表发送失败
+            alert(response.errmsg)
+            $(".get_code").attr("onclick", "sendSMSCode();");
+        }
+    }
+    })
 }
 
 // 调用该函数模拟点击左侧按钮
