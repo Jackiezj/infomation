@@ -52,7 +52,7 @@ def create_app(config_name):
     # 帮我们做了：从cookie中取出随机值，从表单中取出随机，然后进行校验，并且响应校验结果
     # 我们需要做：1. 在返回响应的时候，往cookie中添加一个csrf_token，2. 并且在表单中添加一个隐藏的csrf_token
     # 而我们现在登录或者注册不是使用的表单，而是使用 ajax 请求，所以我们需要在 ajax 请求的时候带上 csrf_token 这个随机值就可以了
-    # CSRFProtect(app)
+    CSRFProtect(app)
     # 设置session保存指定位置
     Session(app)
 
@@ -71,6 +71,7 @@ def create_app(config_name):
         data = {"user": user.to_dict() if user else None}
         return render_template('news/404.html', data=data)
 
+    # 向cookie中设置csrf_token
     @app.after_request
     def after_request(response):
         # 生成随机的csrf_token的值
